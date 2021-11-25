@@ -31,6 +31,16 @@ func NewWatcher(endpoints []string) (*Watcher, error) {
 	}, nil
 }
 
+func (w *Watcher) WatchItems(items []Item) error {
+	for _, item := range items {
+		err := w.Watch(item)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (w *Watcher) Watch(item Item) error {
 	if item == nil {
 		return fmt.Errorf("parser is nil")
