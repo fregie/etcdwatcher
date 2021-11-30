@@ -45,38 +45,41 @@ func (w *Watcher) Watch(item Item) error {
 	if item == nil {
 		return fmt.Errorf("parser is nil")
 	}
-	for {
-		var rev int64 = 0
-		rsp, err := w.etcdCli.Get(context.Background(), item.Key())
-		if err != nil {
-			w.logger.Printf("etcd get error: %v", err)
-		} else {
-			if len(rsp.Kvs) > 0 {
-				err := item.Parse(rsp.Kvs[0].Value)
-				if err != nil {
-					w.logger.Printf("parser error: %v", err)
-				}
-			}
-			rev = rsp.Header.Revision
-		}
-		watcher := clientv3.NewWatcher(w.etcdCli)
-		rspChan := watcher.Watch(context.Background(), item.Key(), clientv3.WithRev(rev))
-		for rsp := range rspChan {
-			for _, ev := range rsp.Events {
-				switch ev.Type {
-				case clientv3.EventTypePut:
-					err := item.Parse(ev.Kv.Value)
+	go func() {
+		for {
+			var rev int64 = 0
+			rsp, err := w.etcdCli.Get(context.Background(), item.Key())
+			if err != nil {
+				w.logger.Printf("etcd get error: %v", err)
+			} else {
+				if len(rsp.Kvs) > 0 {
+					// w.logger.Printf("%s: %s", item.Key(), string(rsp.Kvs[0].Value))
+					err := item.Parse(rsp.Kvs[0].Value)
 					if err != nil {
 						w.logger.Printf("parser error: %v", err)
 					}
-				case clientv3.EventTypeDelete:
-					item.SetDefault()
+				}
+				rev = rsp.Header.Revision
+			}
+			watcher := clientv3.NewWatcher(w.etcdCli)
+			rspChan := watcher.Watch(context.Background(), item.Key(), clientv3.WithRev(rev))
+			for rsp := range rspChan {
+				for _, ev := range rsp.Events {
+					switch ev.Type {
+					case clientv3.EventTypePut:
+						err := item.Parse(ev.Kv.Value)
+						if err != nil {
+							w.logger.Printf("parser error: %v", err)
+						}
+					case clientv3.EventTypeDelete:
+						item.SetDefault()
+					}
 				}
 			}
+			time.Sleep(3 * time.Second)
 		}
-		time.Sleep(3 * time.Second)
-	}
-
+	}()
+	return nil
 }
 
 type Item interface {
