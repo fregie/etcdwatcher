@@ -59,7 +59,7 @@ func (w *Watcher) Watch(item Item) error {
 						w.logger.Printf("parser error: %v", err)
 					}
 				}
-				rev = rsp.Header.Revision
+				rev = rsp.Header.Revision + 1
 			}
 			watcher := clientv3.NewWatcher(w.etcdCli)
 			rspChan := watcher.Watch(context.Background(), item.Key(), clientv3.WithRev(rev))

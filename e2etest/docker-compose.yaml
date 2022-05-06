@@ -1,0 +1,20 @@
+version: "3"
+
+services:
+  etcd:
+    image: bitnami/etcd:3.5.0
+    environment:
+      ETCD_ROOT_PASSWORD: password
+      ETCD_ENABLE_V2: "true"
+      ALLOW_NONE_AUTHENTICATION: "yes"
+    ports:
+      - "52379:2379"
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.23.0/24
