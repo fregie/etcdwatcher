@@ -83,8 +83,11 @@ func (w *Watcher) Watch(item Item) error {
 }
 
 type Item interface {
+	// Return the key watching
 	Key() string
+	// Parse the data when the value is changed
 	Parse([]byte) error
+	// Set the default value
 	SetDefault()
 }
 
