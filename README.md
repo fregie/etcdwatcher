@@ -1,4 +1,5 @@
 # etcdwatcher
+[![Build and test](https://github.com/fregie/etcdwatcher/actions/workflows/test.yml/badge.svg)](https://github.com/fregie/etcdwatcher/actions/workflows/test.yml)  
 etcdwatcher is a simple library to watch etcd changes.Usually used to monitor configuration items.
 Just define the key to watch and the value type,it will update the value.
 
