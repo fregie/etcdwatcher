@@ -1,9 +1,13 @@
-package etcdwatcher
+package etcdwatcher_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/fregie/etcdwatcher"
+)
 
 func TestBool(t *testing.T) {
-	b := NewBool("test", true)
+	b := etcdwatcher.NewBool("test", true)
 	if b.Value() != true {
 		t.Errorf("b.Value() != true")
 	}

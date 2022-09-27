@@ -37,6 +37,10 @@ func TestPrefixWatcher(t *testing.T) {
 	}
 	err = watchMap.SaveToEtcd(context.Background(), etcdCli, "key1", "value1")
 	checkErr(t, err)
+	err = watchMap.SaveToEtcd(context.Background(), etcdCli, "key2", "value2")
+	checkErr(t, err)
+	err = watchMap.SaveToEtcd(context.Background(), etcdCli, "key3", "value3")
+	checkErr(t, err)
 	time.Sleep(time.Second)
 	i, ok := watchMap.GetItem("key1")
 	if !ok {
@@ -44,6 +48,13 @@ func TestPrefixWatcher(t *testing.T) {
 	}
 	if i.(*etcdwatcher.String).Value() != "value1" {
 		t.Errorf("i.(*etcdwatcher.String).Value != \"value1\"")
+	}
+	i, ok = watchMap.GetItem("key2")
+	if !ok {
+		t.Errorf("!ok after set key2")
+	}
+	if i.(*etcdwatcher.String).Value() != "value2" {
+		t.Errorf("i.(*etcdwatcher.String).Value != \"value2\"")
 	}
 	err = watchMap.DeleteFromEtcd(context.Background(), etcdCli, "key1")
 	checkErr(t, err)
