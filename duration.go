@@ -5,6 +5,12 @@ import (
 	"time"
 )
 
+type Duration struct {
+	key          string
+	defaultValue int64
+	value        int64
+}
+
 func NewDuration(key string, defaultDuration time.Duration) *Duration {
 	return &Duration{
 		key:          key,

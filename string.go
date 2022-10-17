@@ -39,9 +39,3 @@ func (p *String) Value() string {
 	defer p.rwMutex.RUnlock()
 	return p.value
 }
-
-type Duration struct {
-	key          string
-	defaultValue int64
-	value        int64
-}

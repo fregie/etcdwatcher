@@ -34,12 +34,14 @@ func (s *WatchTestSuite) TestWatcher() {
 	stringValue := etcdwatcher.NewString("/testKey/string", "default")
 	durationValue := etcdwatcher.NewDuration("/testKey/duration", time.Second)
 	boolValue := etcdwatcher.NewBool("/testKey/bool", false)
+	stringSliceValue := etcdwatcher.NewStringSlice("/testKey/stringSlice", []string{"a", "b", "c"})
 	err = watcher.WatchItems([]etcdwatcher.Item{
 		int32Value,
 		int64Value,
 		stringValue,
 		durationValue,
 		boolValue,
+		stringSliceValue,
 	})
 	s.Nil(err)
 	s.Equal(int32(10), int32Value.Value())
@@ -47,15 +49,18 @@ func (s *WatchTestSuite) TestWatcher() {
 	s.Equal("default", stringValue.Value())
 	s.Equal(time.Second, durationValue.Value())
 	s.Equal(false, boolValue.Value())
+	s.Equal([]string{"a", "b", "c"}, stringSliceValue.Value())
 	etcdCli.Put(context.Background(), "/testKey/int32", "20")
 	etcdCli.Put(context.Background(), "/testKey/int64", "20")
 	etcdCli.Put(context.Background(), "/testKey/string", "string")
 	etcdCli.Put(context.Background(), "/testKey/duration", "2s")
 	etcdCli.Put(context.Background(), "/testKey/bool", "true")
+	etcdCli.Put(context.Background(), "/testKey/stringSlice", `["a","b","c","d"]`)
 	time.Sleep(300 * time.Millisecond)
 	s.Equal(int32(20), int32Value.Value())
 	s.Equal(int64(20), int64Value.Value())
 	s.Equal("string", stringValue.Value())
 	s.Equal(time.Second*2, durationValue.Value())
 	s.Equal(true, boolValue.Value())
+	s.Equal([]string{"a", "b", "c", "d"}, stringSliceValue.Value())
 }
